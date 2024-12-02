@@ -34,7 +34,7 @@
 
 # 0. Concepts  
 - **Frontend** (client): Runs on your local machine.  
-- **Backend**: Runs on a remote server.  
+- **Backend**: Runs on a remote server.(Bridge between local PC and DB)  
 - Interaction between the two forms the foundation of any app.  
 
 ---
@@ -89,11 +89,17 @@ Key topics:
 - **Route**: Maps `path` (URL) to `element` (component). Example: `<Route path="/login" element={<Login />} />`.  
 - **Wildcard Route**: Handles nested routes or undefined paths. Example: `<Route path="*" element={<NotFound />} />` to catch invalid URLs.  
 
+
 ### [React 입문자들이 알아야할 Redux 쉽게설명 (8분컷)](https://www.youtube.com/watch?v=QZcYz2NrDIs)  
 Explains why Redux is needed and its core concepts.  
 
-### [생활코딩 - React Redux](https://www.youtube.com/playlist?list=PLuHgQVnccGMDuVdsGtH1_452MtRxALb_7)  
+### [React Redux](https://www.youtube.com/playlist?list=PLuHgQVnccGMDuVdsGtH1_452MtRxALb_7)  
 Walks through props → Redux → React Redux, highlighting the benefits of React Redux for managing complex state and reducing unnecessary props.  
+
+### [react-redux(2022 ver)](https://youtu.be/yjuwpf7VH74?si=RWQdZGgZM-xIsFdq)  
+
+### [Redux toolkit](https://www.youtube.com/watch?v=9wrHxqI6zuM)  
+
 
 ---
 
@@ -128,7 +134,7 @@ Key topics from the playlist:
 ## 2.2 Express.js  
 ### [Express Crash Course](https://www.youtube.com/watch?v=CnH3kAXSrmU&t=53s)  
 
-Although you can build servers using just **Node.js**, starting directly with Express.js shouldn’t cause major issues.  
+Although you can build servers using just **Node.js**, starting directly with Express.js shouldn’t cause major issues.(I think)  
 
 I’ve decided to focus on this **Express-only** lecture for now.  
 
@@ -136,8 +142,24 @@ It’s true that learning with vanilla Node.js first could provide a deeper unde
 
 If needed later, I can refer to this YouTuber’s Node.js lecture: [Vanilla Node.js Server Tutorial](https://www.youtube.com/watch?v=32M1al-Y6Ag).  
 
-## 2.3 Express.js With DB
 
+## CRDU Project without DB  
+### [github repo](https://github.com/hyeok-jong/crud-project)  
+At this point, try creating a project that incorporates all the concepts you've learned so far.  
+
+
+
+## 2.3 MongoDB  
+### [MongoDB Crash Course](https://youtu.be/ofme2o29ngU?si=sKzwqO4ShNm6yuj7)  
+Nice explain of MongoDB with multiple examples.  
+
+## 2.4 Mongoose  
+### [Mongoose Crash Course - Beginner Through Advanced](https://www.youtube.com/watch?v=DZBGEVgL2eE)
+
+## 2.5 JWT, Express, and Mongoose
+### [User Authentication and Authorization in Express and MongoDB using JWT](https://medium.com/@it.ermias.asmare/user-authentication-and-authorization-in-express-and-mongodb-using-jwt-643503a23452)
+
+### [Node.js + MongoDB: User Authentication & Authorization with JWT](https://www.bezkoder.com/node-js-mongodb-auth-jwt/)
 
 
 # 3. AWS  
