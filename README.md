@@ -143,20 +143,35 @@ It’s true that learning with vanilla Node.js first could provide a deeper unde
 If needed later, I can refer to this YouTuber’s Node.js lecture: [Vanilla Node.js Server Tutorial](https://www.youtube.com/watch?v=32M1al-Y6Ag).  
 
 
-## CRDU Project without DB  
+## 2.3 CRDU Project without DB  
 ### [github repo](https://github.com/hyeok-jong/crud-project)  
 At this point, try creating a project that incorporates all the concepts you've learned so far.  
 
 
 
-## 2.3 MongoDB  
+## 2.4 MongoDB  
 ### [MongoDB Crash Course](https://youtu.be/ofme2o29ngU?si=sKzwqO4ShNm6yuj7)  
 Nice explain of MongoDB with multiple examples.  
 
-## 2.4 Mongoose  
+## 2.5 Mongoose  
 ### [Mongoose Crash Course - Beginner Through Advanced](https://www.youtube.com/watch?v=DZBGEVgL2eE)
 
-## 2.5 JWT, Express, and Mongoose
+## 2.6 JWT, Express, and Mongoose
+
+1. Send Login Data: Browser sends username and password to the server.  
+2. Create JWT: Server verifies the credentials and generates a JWT using a secret key.  
+3. Return JWT: Server sends the generated JWT back to the browser.  
+4. Store JWT: Browser stores the JWT (e.g., in localStorage or cookies).  
+5. Send Authenticated Request: Browser includes the JWT in the Authorization header for subsequent requests.  
+6. Validate JWT: Server validates the JWT to ensure the request is authenticated.  
+7. Return Response: Server processes the request and sends the response back to the browser.  
+
+## 2.7 CRUD project with DB and Login.  
+Mini project like Notion(online memo application).  
+
+
+
+
 ### [User Authentication and Authorization in Express and MongoDB using JWT](https://medium.com/@it.ermias.asmare/user-authentication-and-authorization-in-express-and-mongodb-using-jwt-643503a23452)
 
 ### [Node.js + MongoDB: User Authentication & Authorization with JWT](https://www.bezkoder.com/node-js-mongodb-auth-jwt/)
