@@ -18,6 +18,8 @@
 2. I ensure I understand concepts so I can replicate them without needing the lecture again.  
 3. With internet access or LLMs, I can independently research and implement the functions I want to create.  
 4. Currently, I can write over 80% of my code independently in an offline setting (without external help).  
+5. A project is the best way to review what you have studied. Below are some projects for reference or as checkpoints.  
+
 
 ---
 
@@ -47,6 +49,10 @@ This lecture covers the basics of HTML and CSS. With it, you can build static we
 
 After this, I recommend watching videos on **Flexbox** and **Grid** for better layout management.  
 
+
+<h2 style="color:red;"> Project 1. </h2>
+<p style="color: red;">Create your own static web page as demonstrated in the lecture.</p>  
+
 ---
 
 ## 1.2 JavaScript  
@@ -59,6 +65,10 @@ Covers advanced JavaScript topics, especially async functions and API calls (Lec
 
 ### [Build a JavaScript WEATHER APP in 30+ minutes!](https://www.youtube.com/watch?v=VaDUGPMjzOM)  
 A hands-on lecture on building an app using public API calls.  
+
+
+<h2 style="color:red;"> Project 2. </h2>
+<p style="color: red;">Create your own static web page as demonstrated in the lecture. Generate your HTML code dynamically using JavaScript. And use DOM.</p>
 
 ---
 
@@ -90,6 +100,11 @@ Key topics:
 - **Wildcard Route**: Handles nested routes or undefined paths. Example: `<Route path="*" element={<NotFound />} />` to catch invalid URLs.  
 
 
+<h2 style="color:red;"> Project 3. </h2>
+<p style="color: red;">Create your own web with React. And use Routes for multiple pages.</p>
+
+
+
 ### [React 입문자들이 알아야할 Redux 쉽게설명 (8분컷)](https://www.youtube.com/watch?v=QZcYz2NrDIs)  
 Explains why Redux is needed and its core concepts.  
 
@@ -99,6 +114,12 @@ Walks through props → Redux → React Redux, highlighting the benefits of Reac
 ### [react-redux(2022 ver)](https://youtu.be/yjuwpf7VH74?si=RWQdZGgZM-xIsFdq)  
 
 ### [Redux toolkit](https://www.youtube.com/watch?v=9wrHxqI6zuM)  
+
+
+<h2 style="color:red;"> Project 4. </h2>
+<p style="color: red;">Create your own web with React. And use react-redux for global state.</p>
+
+
 
 
 ---
@@ -143,20 +164,92 @@ It’s true that learning with vanilla Node.js first could provide a deeper unde
 If needed later, I can refer to this YouTuber’s Node.js lecture: [Vanilla Node.js Server Tutorial](https://www.youtube.com/watch?v=32M1al-Y6Ag).  
 
 
-## 2.3 CRDU Project without DB  
+
+<h2 style="color:red;"> Project 5. - CRUD Proejct (w/o DB)</h2>  
+
+<p style="color: red;">Create your own application using React and Express. Please refer to my repository below.</p>
+<p style="color: red;">In the repository, I have utilized everything we learned so far, allowing you to review and consolidate all the concepts covered above.</p>
+
+
 ### [github repo](https://github.com/hyeok-jong/crud-project)  
-At this point, try creating a project that incorporates all the concepts you've learned so far.  
 
 
 
-## 2.4 MongoDB  
+## 2.3 MongoDB  
 ### [MongoDB Crash Course](https://youtu.be/ofme2o29ngU?si=sKzwqO4ShNm6yuj7)  
 Nice explain of MongoDB with multiple examples.  
 
-## 2.5 Mongoose  
+## 2.4 Mongoose  
 ### [Mongoose Crash Course - Beginner Through Advanced](https://www.youtube.com/watch?v=DZBGEVgL2eE)
 
-## 2.6 JWT, Express, and Mongoose
+
+
+<h2 style="color:red;"> Project 5. - CRUD Proejct (mini todo app)</h2>  
+
+<p style="color: red;">Create your own application using React, Express, and MongoDB. Please refer to my repository below.</p>
+<p style="color: red;">In this resposityofy 해당 앱은, DB를 사용하여 ㄹ.</p>
+
+### [github repo](https://github.com/hyeok-jong/crud-project)  
+
+
+
+
+
+
+
+## 2.5 Next Step
+
+- Here, you have learned everything needed to prepare for building an application.  
+- This includes creating a web page with React, a server with Express, and a database with MongoDB.  
+- However, currently, all these components are running on your local PC.  
+- For a real-world application, each of these should ideally run on the cloud. (Of course, it's also possible to run and deploy them from your local PC.)  
+- To build a true application, you need to learn about MongoDB Atlas, Docker, and AWS services such as S3 and ECS.  
+
+
+
+# 3. Application.  
+- As mentioned earlier, the application will be deployed to the cloud.  
+- First, upload MongoDB to ensure the database runs smoothly in the cloud.  
+- Next, learn Docker to prepare for deploying the backend (API).  
+- Deploy the backend to ECS and verify that the React project runs properly on the local environment.  
+- Finally, build the React project and upload it to S3. Once this is done, the process is complete.  
+
+
+
+
+## 3.1 MongoDB Atlas  
+
+## 3.2 Docker  
+
+
+## 3.2 AWS ESC  
+
+
+## 3.3 AWS S3  
+
+## 3.4 AWS CloudFront  
+
+## 3.5 Certificate Manage  
+
+
+
+
+# 4. DB Backup
+
+
+# YouTube Teacher Recommendations  
+- [SuperSimpleDev](https://www.youtube.com/@SuperSimpleDev/videos)  
+- [ColorCode](https://www.youtube.com/@ColorCode-io)  
+- [Traversy Media](https://www.youtube.com/@TraversyMedia)  
+
+
+
+
+
+
+
+
+## 2.5 JWT, Express, and MongoDB(Local PC).  
 
 1. Send Login Data: Browser sends username and password to the server.  
 2. Create JWT: Server verifies the credentials and generates a JWT using a secret key.  
@@ -166,8 +259,12 @@ Nice explain of MongoDB with multiple examples.
 6. Validate JWT: Server validates the JWT to ensure the request is authenticated.  
 7. Return Response: Server processes the request and sends the response back to the browser.  
 
-## 2.7 CRUD project with DB and Login.  
-Mini project like Notion(online memo application).  
+
+
+# TBD  
+web socket for chat app
+
+
 
 
 
@@ -175,22 +272,3 @@ Mini project like Notion(online memo application).
 ### [User Authentication and Authorization in Express and MongoDB using JWT](https://medium.com/@it.ermias.asmare/user-authentication-and-authorization-in-express-and-mongodb-using-jwt-643503a23452)
 
 ### [Node.js + MongoDB: User Authentication & Authorization with JWT](https://www.bezkoder.com/node-js-mongodb-auth-jwt/)
-
-
-# 3. AWS  
-## 3.0 IAM  
-## 3.1 S3  
-## 3.2 Route 53  
-## 3.3 CloudFront  
-## 3.4 Certificate Manage  
-## 3.5 Serverless backend server  
-
-
-# YouTube Teacher Recommendations  
-- [SuperSimpleDev](https://www.youtube.com/@SuperSimpleDev/videos)  
-- [ColorCode](https://www.youtube.com/@ColorCode-io)  
-- [Traversy Media](https://www.youtube.com/@TraversyMedia)  
-
----
-
-This version ensures consistency and readability without altering your meaning. Let me know if there’s anything more to refine!
