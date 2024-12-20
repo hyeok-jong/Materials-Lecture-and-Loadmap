@@ -1067,9 +1067,6 @@ This policy allows public access to the files in your bucket. Replace `yourdomai
 
 
 
-아래는 요청하신 내용을 영어로 정리한 버전입니다:
-
----
 
 ## 7.7 AWS CloudFront  
 
