@@ -864,28 +864,487 @@ This allows ECS to pull images from ECR in a private network without needing a N
 
 
 
+# **6. API - HTTP -> HTTPS Redirection**
+
+---
+
+## **6.1 Custom Domain**
+In the previous setup, using the ALB's DNS name allowed the API to work correctly.  
+However, for HTTPS, a custom domain is required.  
+I used **Dynadot** for my domain management.
+
+**Dynadot DNS Configuration:**
+- **Subdomain:** `api`
+- **Record Type:** `CNAME`
+- **IP Address or Target Host:** ALB's DNS name (e.g., `albname-idnumber.ap-northeast-2.elb.amazonaws.com`).
+
+Test the setup by accessing:
+- **URL:** `http://api.customdomain.com`
+- You should see `SUCCESS`.
+
+---
+
+## **6.2 AWS ACM - SSL Certificate**
+1. Navigate to **AWS Certificate Manager (ACM)** → **Request** → **Request a public certificate**.
+2. **Domain Name:** `api.customdomain.com`.
+3. Select **DNS validation (recommended)**.
+4. Obtain the **CNAME** and **VALUE** for DNS validation.
+
+---
+
+## **6.3 Custom Domain Validation**
+1. In **Dynadot DNS Settings**:
+   - **Subdomain:** Remove the domain part (e.g., `_random-string.api` instead of `_random-string.api.customdomain.com`).
+   - **Record Type:** `CNAME`.
+   - **Value:** Use the CNAME value provided by ACM (`random-value.acm-validations.aws`).
+2. Return to **AWS ACM** and confirm the certificate status becomes **Issued** (takes ~5 minutes).
+
+---
+
+## **6.4 ALB - Add HTTPS Listener**
+1. Navigate to **AWS EC2 → Load Balancers → Select your ALB**.
+2. Go to the **Listeners and Rules** tab → **Add Listener**.
+3. Configure:
+   - **Protocol:** HTTPS.
+   - **Port:** 443.
+   - **Target Group:** Use the existing Target Group with HTTP.
+   - **Certificate (from ACM):** Select the issued certificate for `api.customdomain.com`.
+
+---
+
+## **6.5 ALB - HTTP -> HTTPS Redirection**
+1. Navigate back to the same ALB → Select the **HTTP Listener (Port 80)**.
+2. Modify the **Default Action**:
+   - **Action:** Redirect to.
+   - **Redirect to:** HTTPS.
+   - **Port:** 443.
+   - **Response Code:** 301 (Moved Permanently).
+
+---
+
+## **6.6 ECS -> Security Group**
+Ensure the security group attached to your ALB is correctly configured.
+
+1. Select the **security group** attached to the ALB.
+2. Edit **Inbound Rules**:
+   - **HTTP (Port 80):** Keep open for redirection purposes.
+   - **HTTPS (Port 443):** Allow traffic.
+     - **Type:** HTTPS.
+     - **Port Range:** 443.
+     - **Source:** `0.0.0.0/0` (allow all IPs).
+
+---
+
+## **6.7 Testing**
+1. Test the following configurations in your API client or browser:
+   - **Old URL (HTTP):** This should redirect to HTTPS or fail.
+   - Update your base URL:
+     ```javascript
+     // export const baseURL = 'http://albname-idnumber.ap-northeast-2.elb.amazonaws.com';
+     export const baseURL = 'https://api.customdomain.com';
+     // export const baseURL = 'http://api.customdomain.com';
+     ```
+2. Confirm that all requests now work over HTTPS.
+
+---
+
+This completes the **HTTP to HTTPS redirection** setup for your API using a custom domain! If you encounter any issues, let me know for further assistance. 😊
+
+
+
+
+---
+
+# 7 AWS S3 - Deploying Your Built React App on the Cloud  
+This guide helps you deploy a React app to AWS S3 with a custom domain.
+
+## 7.1 Build Your React App  
+Run the following command to build the production version of your React app:  
+```bash
+npm run build
+```  
+This generates a `build/` folder containing all static files for deployment.
+
+---
+
+## 7.2 Buy a Custom Domain  
+You can purchase a domain from any domain registrar. For this example, Dynadot is used.
+
+---
+
+## 7.3 Create an S3 Bucket  
+
+1. **Create a new S3 bucket**:  
+   - Name it the same as your custom domain (e.g., `customdomain.com`).
+   - Uncheck **Block all public access** (you'll see a warning, which is normal).  
+
+2. **Enable Static Website Hosting**:  
+   - Go to the bucket's **Properties** tab.  
+   - Enable **Static Website Hosting**.  
+   - Set the following:  
+     - **Index Document**: `index.html`  
+     - **Error Document**: `index.html` (necessary for React Router).  
+
+3. **Upload Your Build Files**:  
+   - Upload all files from the `build/` folder to the root of your S3 bucket.  
+
+---
+
+## 7.4 Configure Bucket Policy  
+
+To make the contents of your bucket publicly accessible:  
+1. Go to the **Permissions** tab of your bucket.  
+2. Add the following JSON to the **Bucket Policy** section:  
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::yourdomain.com/*"
+        }
+    ]
+}
+```
+
+This policy allows public access to the files in your bucket. Replace `yourdomain.com` with your actual bucket name (domain).
+
+
+
+## 7.5 ACM SSL  
+
+1. **Go to the ACM Console**  
+   - In the AWS Management Console, change the region to **US East (N. Virginia)** (`us-east-1`) from the top-right corner.
+
+2. **Request a Certificate**  
+   - Navigate to **Certificate Manager (ACM)** → Click **Request a Certificate**.  
+   - Choose **Request a Public Certificate**.  
+
+3. **Enter Domain Names**  
+   - Add your domain names (e.g., `yourdomain.com` and `www.yourdomain.com`).  
+
+4. **Choose Validation Method**  
+   - Select **DNS Validation** → Click **Next**.  
+
+5. **Verify the CNAME Record Provided by ACM**  
+   - Example CNAME record provided by ACM:  
+     - **Name**: `_randomstring.yourdomain.com`  
+     - **Value**: `_anotherstring.acm-validations.aws`  
+
+6. **Add the CNAME Record to Your DNS Management Service**  
+   - If using Route 53 (or another domain management service), add the provided CNAME record to your DNS settings.  
+
+7. **Check Certificate Status**  
+   - Return to ACM and wait for the status to change to **Issued**.  
+   - This process may take 5–30 minutes.
+
+
+## 7.6 Dynadot: Completing ACM Certificate Validation  
+
+1. **CNAME Record Example from ACM**  
+   - **Name**: `_randomstring.yourdomain.com`  
+   - **Value**: `_anotherstring.acm-validations.aws`  
+
+2. **Add the CNAME Record in Dynadot**  
+   - Navigate to Dynadot's DNS management settings.  
+   - Add the CNAME record as follows:  
+     - **Subdomain**: `_randomstring` (only the part before `.yourdomain.com`)  
+     - **Record Type**: CNAME  
+     - **Target Host**: `_anotherstring.acm-validations.aws`  
+
+3. **Save Changes**  
+   - Save the settings in Dynadot.  
+
+4. **Verify Certificate Status in ACM**  
+   - Return to the AWS ACM console and check if the certificate status changes to **Issued**.  
+   - This may take 5–30 minutes.  
+
+5. **Region Reminder**  
+   - Ensure that you remain in the **US East (N. Virginia)** (`us-east-1`) region throughout this process.  
+
+
+
+아래는 요청하신 내용을 영어로 정리한 버전입니다:
+
+---
+
+## 7.7 AWS CloudFront  
+
+### 1. Create Distribution  
+
+#### Origin Settings  
+
+- **Origin Domain Name**:  
+  - Select the website endpoint of your S3 bucket.  
+  - Example: `yourdomain.com.s3-website-ap-northeast-2.amazonaws.com`.  
+  - **Important**: Ensure you select "Use website endpoint."  
+    - Reason: S3's static website hosting only supports HTTP. Using the website endpoint ensures CloudFront works correctly.  
+
+- **Origin Access**:  
+  - **Port**: 80  
+  - **Origin Shield**: No  
+    - Reason: Only enable Origin Shield if large-scale traffic is expected. Otherwise, it is unnecessary for typical use cases.  
+
+---
+
+#### Default Settings  
+
+- **Compress Objects Automatically**: Yes  
+- **Viewer Protocol Policy**: Redirect HTTP to HTTPS  
+- **Allowed HTTP Methods**: All  
+- **WAF**: Optional (Use if you need Web Application Firewall protection).  
+
+---
+
+### 2. Distribution Settings  
+
+- **Price Class**: Use all edge locations (best performance)  
+  - Reason: Ensures optimal performance by using all global edge locations.  
+
+- **Alternate Domain Name (CNAME)**: `yourdomain.com`, `www.yourdomain.com`  
+  - Reason: Connects your custom domain to CloudFront.  
+
+- **Custom SSL Certificate**: Select the certificate issued by ACM (`yourdomain.com`)  
+  - Reason: Required to enable HTTPS support. Ensure the certificate status is **Issued**.  
+
+- **Supported HTTP Versions**: HTTP/2, HTTP/3  
+  - Reason: Supports the latest protocols for better performance.  
+
+- **Default Root Object**: `index.html`  
+  - Reason: Ensures the root URL ("/") loads the default page of your React app.  
+
+- **IPv6**: On  
+  - Reason: Supports modern network protocols for improved compatibility.  
+
+- **Logging**: Off (enable only if needed)  
+  - Reason: Logging incurs additional costs, so use it only when required.  
+
+---
+
+### 3. Verify the CloudFront Distribution  
+
+- Select the newly created CloudFront distribution.  
+- Go to the **General** tab and note the **Domain Name**:  
+  - Example: `d1234abcd.cloudfront.net`.  
+
+---
+
+### 4. Dynadot DNS Configuration  
+
+#### (1) Primary Domain (`yourdomain.com`)  
+- **Record Type**: CNAME  
+- **Target Host**: `d1234abcd.cloudfront.net` (CloudFront distribution domain).  
+- **Subdomain**: Leave blank.  
+
+#### (2) Subdomain (`www.yourdomain.com`)  
+- **Record Type**: CNAME  
+- **Target Host**: `d1234abcd.cloudfront.net` (CloudFront distribution domain).  
+- **Subdomain**: `www`.  
+
+#### (3) Existing API and ACM Settings  
+- Keep the following settings unchanged:  
+  - **Subdomain**: `api` → Connected to ALB (Application Load Balancer).  
+  - **Subdomain**: `_9dddc9e71bd89...` → Used for ACM certificate validation.  
 
 
 
 
 
-# 6 AWS S3 - Make Your built React on Cloud  
+## 7.8 Route 53  
 
-## 6.0 Buy your own domain  
+You **do not need Route 53**. Since you're already using Dynadot DNS, and it is working perfectly, Route 53 is unnecessary for this setup.
 
-## 6.1 AWS S3  
+### Why You Don't Need Route 53  
 
-## 6.2 AWS CloudFront  
+#### **1. DNS Management**  
+- DNS settings are already configured in Dynadot, so there's no need to add Route 53.  
+- Route 53 is AWS's DNS service and should only be used if required.  
 
-## 6.3 Certificate Manage  
+#### **2. Current Situation**  
+- Dynadot is successfully managing both CloudFront and API connections.  
+- ACM certificate validation has also been completed through Dynadot's CNAME records.  
+- For hosting your React app and API, Dynadot alone is sufficient.  
 
-## 6.4 Route 53  
+#### **3. Additional Costs**  
+- Using Route 53 incurs costs for hosted zones and per-query charges.  
+- Dynadot includes DNS management features in its domain cost, making it more cost-efficient.  
+
+#### **Conclusion**  
+- Dynadot DNS can handle everything you need.  
+- Route 53 is unnecessary unless you want to manage the domain entirely within AWS or require seamless AWS service integration.  
+
+Let me know if you have any additional questions! 😊  
+
+---
+
+## 7.9 Updating React App Files in S3 and CloudFront  
+
+Below is a simple guide to reflect changes when the build files of your React app are updated.
+
+---
+
+### **1. Create a New Build**  
+
+After making changes to your React app, generate a new build:  
+```bash
+npm run build
+```  
+- This will create a `build/` directory with the latest static files.
+
+---
+
+### **2. Update Files in the S3 Bucket**  
+
+#### **Option 1: Using AWS CLI (Recommended)**  
+1. Ensure AWS CLI is installed and configured.  
+2. Sync the new build files to your S3 bucket:  
+   ```bash
+   aws s3 sync ./build s3://your-bucket-name --delete
+   ```  
+   - `--delete` removes unnecessary files from the S3 bucket.  
+   - Replace **your-bucket-name** with your actual S3 bucket name.  
+
+#### **Option 2: Using AWS Management Console**  
+1. Navigate to the **S3 Console** and select your bucket.  
+2. (Optional) Delete existing files:  
+   - Click **Select All** → **Delete**.  
+3. Upload new files:  
+   - Click the **Upload** button and upload all files from the `build/` directory.
+
+---
+
+### **3. Invalidate CloudFront Cache**  
+
+Since CloudFront uses caching, updated files might not immediately reflect. Perform a **cache invalidation** to ensure changes are applied.
+
+#### **Option 1: Using AWS CLI**  
+1. Run the following command to invalidate the cache:  
+   ```bash
+   aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"
+   ```  
+   - Replace **YOUR_DISTRIBUTION_ID** with your CloudFront distribution ID (found in the CloudFront console).  
+   - `/*` invalidates all file paths.  
+
+#### **Option 2: Using AWS Management Console**  
+1. Go to the **CloudFront Console** and select your distribution.  
+2. Navigate to the **Invalidations** tab → Click **Create Invalidation**.  
+3. Enter `/*` in the **Paths** field → Click **Invalidate**.
+
+---
+
+### **4. Final Verification**  
+
+1. Visit `https://leehyeokjong.com` or `https://www.leehyeokjong.com` to ensure the changes are reflected.  
+2. Cache invalidation may take a few minutes to complete.  
+
+---
+
+### **Automation Tip (CI/CD)**  
+
+To automate the update process, use CI/CD tools like **GitHub Actions** or **AWS CodePipeline**:  
+1. Automatically trigger a build when code is updated.  
+2. Upload the build files to S3.  
+3. Invalidate CloudFront cache.  
 
 
 
 
 
-# 7. DB Backup
+
+
+
+
+
+
+
+# Next Steps After Completing Web, Server, and Database on AWS  
+
+Once you’ve set up the web app, server, and database and verified everything is working correctly on AWS, here’s how you can manage updates or additional development:
+
+---
+
+## **Development Workflow**  
+
+### **1. Updating Only the React App**  
+- **Local Testing**:  
+  - Run the updated React app locally while using the existing AWS API.  
+  - Configure the local React app to make API requests to the AWS API endpoint (`api.yourdomain.com`).  
+  - Example in `.env.local`:  
+    ```env
+    REACT_APP_API_URL=https://api.yourdomain.com
+    ```  
+
+- **Deploy to AWS**:  
+  - Once the React app changes are tested locally, build the app:  
+    ```bash
+    npm run build
+    ```  
+  - Upload the new build files to the S3 bucket and invalidate the CloudFront cache (as described in **6.9**).
+
+---
+
+### **2. Updating the API**  
+- **Local Testing**:  
+  - Run both the React app and the API locally to test the changes together.  
+  - Update the React app’s `.env.local` to point to the local API:  
+    ```env
+    REACT_APP_API_URL=http://localhost:5000
+    ```  
+  - Test all interactions between the frontend and backend to ensure compatibility.
+
+- **Deploy to AWS**:  
+  - Push the updated API code to the AWS server and restart the backend service.  
+  - Ensure the React app on S3 is configured to use the AWS-hosted API.
+
+---
+
+### **3. Updating Both React and API**  
+- **Local Testing**:  
+  - Run both services locally and test the complete system together.  
+  - Example local setup:  
+    - React app running on `http://localhost:3000`.  
+    - API running on `http://localhost:5000`.  
+
+- **Deploy to AWS**:  
+  - Deploy the updated React app to S3 and invalidate the CloudFront cache.  
+  - Deploy the updated API to AWS and restart the backend service.  
+
+---
+
+## **Best Practices for Development and Updates**  
+
+1. **Separate Environments**:  
+   - Maintain separate environments for development, staging, and production.  
+   - Use environment variables to switch between local and AWS endpoints.  
+
+2. **Version Control**:  
+   - Use Git to track changes for both frontend and backend code.  
+   - Commit frequently and use meaningful commit messages.  
+
+3. **Testing**:  
+   - Test locally before deploying.  
+   - Consider setting up automated tests for both React and API components.  
+
+4. **Automation**:  
+   - Use CI/CD tools (e.g., GitHub Actions) to automate the deployment process for React and the API.  
+
+---
+
+If you have any further questions or need clarification, feel free to ask! 😊
+
+
+# 8. DB Backup
+
+
+
+
+
+
+
+
 
 
 # YouTube Teacher Recommendations  
@@ -913,7 +1372,9 @@ This allows ECS to pull images from ECR in a private network without needing a N
 
 
 # TBD  
-web socket for chat app
+web socket for chat app  
+React APP  
+Cloudflare
 
 
 
