@@ -841,6 +841,8 @@ This policy allows public access to the files in your bucket. Replace `yourdomai
    - Select **DNS Validation** → Click **Next**.  
 
 5. **Verify the CNAME Record Provided by ACM**  
+   - Dynadot의 Dynadot DNS 에서 2.Subdomain Records에서 CNAME으로 하고 key, value 입력하는데 마지막에 .은 제외하고 그리고 Name에서 domain도 제외해야한다.!!!!  
+   이 단계는 사실 S3 안해도 된다.  
    - Example CNAME record provided by ACM:  
      - **Name**: `_randomstring.yourdomain.com`  
      - **Value**: `_anotherstring.acm-validations.aws`  
@@ -930,6 +932,9 @@ This policy allows public access to the files in your bucket. Replace `yourdomai
 - **Logging**: Off (enable only if needed)  
   - Reason: Logging incurs additional costs, so use it only when required.  
 
+
+
+이때 Origin access에서 Origin access control settings 해야하고 OAC 그냥 만들면 된다  
 ---
 
 ### 3. Verify the CloudFront Distribution  
@@ -938,9 +943,11 @@ This policy allows public access to the files in your bucket. Replace `yourdomai
 - Go to the **General** tab and note the **Domain Name**:  
   - Example: `d1234abcd.cloudfront.net`.  
 
+
 ---
 
 ### 4. Dynadot DNS Configuration  
+1. Domain Record에 입력  
 
 #### (1) Primary Domain (`yourdomain.com`)  
 - **Record Type**: CNAME  
